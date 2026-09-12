@@ -1,768 +1,290 @@
-# ============================================================
-# OPTICAL INTENSITY MEASUREMENT LAB - PROJECT VERSION
-# GOOGLE COLAB - SINGLE CELL
-#
-# Features:
-# - Moving laser beam
-# - Moving target
-# - Photodetector
-# - Distance slider
-# - Wavelength selector
-# - Laser power
-# - Reflectivity
-# - Optical intensity
-# - Received optical power
-# - Photodiode voltage
-# - LIVE INTENSITY GRAPH
-# - LIVE VOLTAGE GRAPH
-# - Automatic target movement
-# - Pause / Resume
-# - Reset
-#
-# Display:
-# - No Department name
-# - No Unit-3
-# - No ECE Academic Project
-# - No scientific notation (e+3 / e-3)
-# ============================================================
-
 
 <!DOCTYPE html>
-
 <html>
-
 <head>
-
 <meta charset="UTF-8">
+
+<title>Optical Intensity Measurement Lab</title>
 
 <style>
 
-/* =========================================================
-   GENERAL
-========================================================= */
-
 *{
     box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
 body{
     margin:0;
-    background:#edf1f7;
-    font-family:Arial,Helvetica,sans-serif;
-    color:#25334a;
+    background:#07111f;
+    color:#e8f1ff;
 }
 
-.lab{
-    width:100%;
-    max-width:1150px;
+.container{
+    max-width:1400px;
     margin:auto;
-    background:white;
-    min-height:100vh;
+    padding:20px;
 }
-
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 .header{
-
-    background:#07152b;
-
-    color:white;
-
-    padding:18px 25px;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-}
-
-.header-title{
-
-    font-size:18px;
-
-    font-weight:bold;
-
-    letter-spacing:1px;
-}
-
-.header-sub{
-
-    color:#9ba9c2;
-
-    font-size:14px;
-
-    margin-top:7px;
-}
-
-.header-right{
-
-    color:#a9b8ff;
-
-    font-weight:bold;
-}
-
-
-/* =========================================================
-   TITLE
-========================================================= */
-
-.title{
-
-    padding:25px 30px 10px;
-}
-
-.title h1{
-
-    margin:0;
-
-    font-size:30px;
-
-    color:#111b31;
-}
-
-.subtitle{
-
-    margin-top:10px;
-
-    color:#56647a;
-
-    font-size:17px;
-}
-
-.badges{
-
-    margin-top:15px;
-}
-
-.badge{
-
-    display:inline-block;
-
-    padding:9px 16px;
-
+    text-align:center;
+    padding:22px;
+    background:linear-gradient(135deg,#0d2038,#102b48);
     border-radius:16px;
-
-    margin-right:8px;
-
-    font-weight:bold;
+    border:1px solid #244b70;
+    margin-bottom:18px;
 }
 
-.badge1{
-
-    color:#4d36b7;
-
-    background:#eeeeff;
+.header h1{
+    margin:0;
+    color:#55d9ff;
+    font-size:32px;
 }
 
-.badge2{
-
-    color:#00875f;
-
-    background:#e3fff3;
+.header p{
+    margin:8px 0 0;
+    color:#a9c6df;
 }
-
-
-/* =========================================================
-   CONTROL PANEL
-========================================================= */
 
 .controls{
-
-    margin:15px 25px;
-
-    padding:20px;
-
-    background:#f5f7fb;
-
-    border:1px solid #dce3ed;
-
+    background:#0c1b2d;
+    border:1px solid #234967;
     border-radius:15px;
+    padding:20px;
+    margin-bottom:18px;
 }
 
-.control-grid{
+.controls h2{
+    color:#55d9ff;
+    margin-top:0;
+}
 
+.grid{
     display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+}
 
-    grid-template-columns:
-    repeat(2,1fr);
-
-    gap:18px 30px;
+.control{
+    background:#101f32;
+    padding:15px;
+    border-radius:12px;
+    border:1px solid #284a66;
 }
 
 .control label{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    margin-bottom:8px;
-
+    display:block;
+    color:#c9e4f7;
+    margin-bottom:10px;
     font-weight:bold;
-
-    color:#40506a;
 }
 
-.control-value{
-
-    color:#5737c8;
+.value{
+    color:#59e0ff;
+    font-size:20px;
+    font-weight:bold;
 }
 
 input[type=range]{
-
     width:100%;
-
-    accent-color:#583bd1;
-
-    cursor:pointer;
 }
 
 select{
-
     width:100%;
-
-    padding:10px;
-
-    border-radius:8px;
-
-    border:1px solid #ccd5e3;
-
-    background:white;
-
-    font-size:15px;
-}
-
-.buttons{
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    gap:12px;
-
-    margin-top:20px;
+    padding:9px;
+    border-radius:7px;
+    background:#081421;
+    color:white;
+    border:1px solid #37627e;
 }
 
 button{
-
+    padding:11px 18px;
     border:none;
-
-    padding:12px 20px;
-
-    border-radius:9px;
-
-    font-size:14px;
-
+    border-radius:8px;
+    background:#1685b5;
+    color:white;
     font-weight:bold;
-
     cursor:pointer;
+    margin:5px;
 }
 
-.pause{
-
-    background:#ffad00;
-
-    color:white;
+button:hover{
+    background:#1ca9df;
 }
 
-.auto{
-
-    background:#5637cc;
-
-    color:white;
-}
-
-.reset{
-
-    background:#e8edf4;
-
-    color:#35445a;
-}
-
-
-/* =========================================================
-   MEASUREMENT CHAIN
-========================================================= */
-
-.chain{
-
-    padding:14px 25px;
-
+.buttons{
     text-align:center;
-
-    font-weight:bold;
-
-    color:#526077;
-
-    letter-spacing:1px;
-}
-
-.chain-box{
-
-    display:inline-block;
-
-    padding:10px 15px;
-
-    margin:4px;
-
-    border-radius:9px;
-
-    border:1px solid #ddd;
-}
-
-.source{
-
-    background:#fff3d8;
-
-    color:#8a4c00;
-}
-
-.medium{
-
-    background:#eeeeff;
-
-    color:#4e42aa;
-}
-
-.detector{
-
-    background:#f8e8ff;
-
-    color:#8133a5;
-}
-
-.electrical{
-
-    background:#e2fff3;
-
-    color:#008a63;
-}
-
-
-/* =========================================================
-   MAIN SIMULATION
-========================================================= */
-
-.simulation{
-
-    margin:10px 25px;
-
-    padding:20px;
-
-    background:#07152b;
-
-    border-radius:18px;
-
-    color:white;
-}
-
-.sim-heading{
-
-    color:#9baac4;
-
-    font-family:monospace;
-
-    letter-spacing:2px;
-
-    font-size:14px;
-
-    margin-bottom:12px;
-}
-
-#scene{
-
-    width:100%;
-
-    height:330px;
-
-    display:block;
-
-    background:#08172e;
-
-    border-radius:12px;
-}
-
-
-/* =========================================================
-   SIMULATION INFO
-========================================================= */
-
-.sim-info{
-
-    display:grid;
-
-    grid-template-columns:
-    repeat(4,1fr);
-
-    gap:10px;
-
     margin-top:15px;
 }
 
-.info{
-
-    background:#10203a;
-
-    padding:13px;
-
-    border-radius:9px;
+.canvas-box{
+    background:#050c16;
+    border:1px solid #24506d;
+    border-radius:15px;
+    padding:10px;
+    margin-bottom:18px;
 }
 
-.info-title{
-
-    color:#8999b4;
-
-    font-size:11px;
-
-    font-family:monospace;
+canvas{
+    width:100%;
+    height:auto;
+    border-radius:10px;
+    display:block;
 }
 
-.info-value{
-
-    color:white;
-
-    font-size:18px;
-
-    font-weight:bold;
-
-    margin-top:5px;
-}
-
-
-/* =========================================================
-   MEASUREMENT CARDS
-========================================================= */
-
-.measurements{
-
+.cards{
     display:grid;
-
-    grid-template-columns:
-    repeat(4,1fr);
-
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
     gap:15px;
-
-    margin:20px 25px;
+    margin-bottom:18px;
 }
 
 .card{
-
-    background:white;
-
-    border:1px solid #e0e5ee;
-
+    background:#0c1b2d;
+    border:1px solid #244967;
     border-radius:14px;
-
     padding:18px;
-
-    box-shadow:
-    0 3px 12px rgba(0,0,0,.07);
+    text-align:center;
 }
 
-.card-title{
+.card h3{
+    margin:0 0 10px;
+    color:#9dc9e5;
+    font-size:15px;
+}
 
-    color:#69758a;
+.big{
+    font-size:28px;
+    color:#55e2ff;
+    font-weight:bold;
+}
 
+.unit{
+    color:#9ab4c9;
     font-size:13px;
 }
 
-.card-value{
-
-    margin-top:8px;
-
-    font-size:25px;
-
-    font-weight:bold;
-
-    color:#5034bc;
-}
-
-.card-unit{
-
-    color:#818b9c;
-
-    font-size:12px;
-
-    margin-top:3px;
-}
-
-
-/* =========================================================
-   GRAPH SECTION
-========================================================= */
-
-.graph-section{
-
-    margin:20px 25px;
-
+.graphs{
     display:grid;
-
-    grid-template-columns:
-    repeat(2,1fr);
-
-    gap:20px;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
 }
 
-.graph-card{
-
-    background:#f5f7fb;
-
-    border:1px solid #dce3ed;
-
+.graph{
+    background:#0c1b2d;
+    border:1px solid #244967;
     border-radius:15px;
-
-    padding:18px;
-
-    min-height:340px;
+    padding:15px;
 }
 
-.graph-title{
-
-    color:#4934ad;
-
-    font-size:17px;
-
-    font-weight:bold;
-
-    margin-bottom:8px;
+.graph h2{
+    color:#55d9ff;
+    font-size:18px;
 }
 
-.graph-description{
-
-    color:#69768b;
-
-    font-size:12px;
-
-    margin-bottom:10px;
-}
-
-.graph-canvas{
-
-    width:100%;
-
-    height:270px;
-
-    display:block;
-
-    background:white;
-
+.graph canvas{
+    background:#07111c;
     border-radius:10px;
-
-    border:1px solid #e0e5ec;
 }
-
-
-/* =========================================================
-   THEORY BOX
-========================================================= */
 
 .theory{
-
-    margin:20px 25px;
-
-    padding:20px;
-
-    background:#07152b;
-
+    background:#0c1b2d;
+    border:1px solid #244967;
     border-radius:15px;
-
-    color:white;
+    padding:20px;
+    margin-top:18px;
 }
 
-.theory h3{
-
-    margin-top:0;
-
-    color:#aebaff;
+.theory h2{
+    color:#55d9ff;
 }
 
 .formula{
-
-    background:#101f39;
-
+    background:#07111c;
+    border-left:4px solid #55d9ff;
     padding:15px;
-
-    margin-top:10px;
-
-    border-radius:8px;
-
-    font-family:monospace;
-
-    color:#d9e0ef;
+    margin:10px 0;
+    font-size:20px;
+    color:#dff7ff;
 }
 
+.relationships{
+    background:#0a1726;
+    border:1px solid #284967;
+    border-radius:12px;
+    padding:18px;
+    margin-top:18px;
+}
 
-/* =========================================================
-   MOBILE
-========================================================= */
+.relationships h3{
+    color:#55d9ff;
+    margin-top:0;
+}
 
-@media(max-width:750px){
+.relationship{
+    padding:10px;
+    border-bottom:1px solid #203b52;
+    color:#d5e8f5;
+}
 
-    .control-grid{
+.relationship:last-child{
+    border-bottom:none;
+}
 
+.status{
+    text-align:center;
+    color:#7eeaff;
+    margin-top:10px;
+}
+
+@media(max-width:800px){
+    .graphs{
         grid-template-columns:1fr;
     }
-
-    .measurements{
-
-        grid-template-columns:
-        repeat(2,1fr);
-    }
-
-    .sim-info{
-
-        grid-template-columns:
-        repeat(2,1fr);
-    }
-
-    .graph-section{
-
-        grid-template-columns:1fr;
-    }
-
-    .header{
-
-        flex-direction:column;
-
-        align-items:flex-start;
-
-        gap:10px;
-    }
-
 }
 
 </style>
-
 </head>
 
 
 <body>
 
+<div class="container">
 
-<div class="lab">
 
-
-<!-- ========================================================
-HEADER
-======================================================== -->
+<!-- HEADER -->
 
 <div class="header">
 
-<div>
+<h1>Optical Intensity Measurement Lab</h1>
 
-<div class="header-title">
-
-OPTICAL INTENSITY MEASUREMENT LAB
-
-</div>
-
-<div class="header-sub">
-
-Interactive Optical Measurement Simulation
-
-</div>
-
-</div>
-
-<div class="header-right">
-
-OPTICAL PROJECT
-
-</div>
+<p>
+Interactive Simulation of Optical Intensity Detection and Photodetector Response
+</p>
 
 </div>
 
 
-<!-- ========================================================
-TITLE
-======================================================== -->
-
-<div class="title">
-
-<h1>
-
-Optical Intensity Measurement Lab
-
-</h1>
-
-
-<div class="badges">
-
-<span class="badge badge1">
-
-OPTICAL INTENSITY
-
-</span>
-
-<span class="badge badge2">
-
-● REAL-TIME ACTIVE
-
-</span>
-
-</div>
-
-
-<div class="subtitle">
-
-Interactive simulation of optical intensity,
-wavelength, target distance and photodetector response
-
-</div>
-
-</div>
-
-
-<!-- ========================================================
-CONTROLS
-======================================================== -->
+<!-- CONTROLS -->
 
 <div class="controls">
 
+<h2>Intensity Lab Controls</h2>
 
-<div class="control-grid">
+<div class="grid">
 
 
 <div class="control">
 
-<label>
-
-Wavelength
-
-<span class="control-value"
-id="waveValue">
-
-532 nm
-
-</span>
-
-</label>
-
+<label>Laser Wavelength</label>
 
 <select id="wavelength">
 
-<option value="450">
-450 nm - Blue
-</option>
-
-<option value="488">
-488 nm - Cyan
-</option>
-
-<option value="532" selected>
-532 nm - Green
-</option>
-
-<option value="590">
-590 nm - Amber
-</option>
-
-<option value="650">
-650 nm - Red
-</option>
+<option value="450">450 nm</option>
+<option value="488">488 nm</option>
+<option value="532" selected>532 nm</option>
+<option value="590">590 nm</option>
+<option value="650">650 nm</option>
 
 </select>
 
@@ -771,81 +293,114 @@ id="waveValue">
 
 <div class="control">
 
-<label>
-
-Target Distance
-
-<span class="control-value"
-id="distanceValue">
-
-50 cm
-
-</span>
-
-</label>
-
-
-<input
-id="distance"
-type="range"
-min="10"
-max="100"
-value="50"
-step="1">
-
-</div>
-
-
-<div class="control">
-
-<label>
-
-Laser Power
-
-<span class="control-value"
-id="powerValue">
-
-10 mW
-
-</span>
-
-</label>
-
+<label>Optical Source Power (P)</label>
 
 <input
 id="power"
 type="range"
 min="1"
-max="50"
-value="10"
-step="1">
+max="20"
+step="0.1"
+value="10">
+
+<div class="value">
+<span id="powerVal">10.0</span> mW
+</div>
 
 </div>
 
 
 <div class="control">
 
-<label>
-
-Target Reflectivity
-
-<span class="control-value"
-id="reflectValue">
-
-70 %
-
-</span>
-
-</label>
-
+<label>Medium Attenuation</label>
 
 <input
-id="reflect"
+id="attenuation"
 type="range"
-min="10"
+min="0"
+max="20"
+step="0.1"
+value="3">
+
+<div class="value">
+<span id="attenuationVal">3.0</span> dB
+</div>
+
+</div>
+
+
+<div class="control">
+
+<label>Propagation Distance</label>
+
+<input
+id="distance"
+type="range"
+min="1"
 max="100"
-value="70"
-step="5">
+step="1"
+value="10">
+
+<div class="value">
+<span id="distanceVal">10</span> cm
+</div>
+
+</div>
+
+
+<div class="control">
+
+<label>Detector / Illuminated Area (A)</label>
+
+<input
+id="area"
+type="range"
+min="1"
+max="50"
+step="0.5"
+value="10">
+
+<div class="value">
+<span id="areaVal">10.0</span> mm²
+</div>
+
+</div>
+
+
+<div class="control">
+
+<label>Detector Responsivity (R)</label>
+
+<input
+id="responsivity"
+type="range"
+min="100"
+max="1000"
+step="10"
+value="500">
+
+<div class="value">
+<span id="responsivityVal">500</span> V/W
+</div>
+
+</div>
+
+
+<div class="control">
+
+<label>Noise Level</label>
+
+<input
+id="noise"
+type="range"
+min="0"
+max="20"
+step="1"
+value="5">
+
+<div class="value">
+<span id="noiseVal">5</span> %
+</div>
 
 </div>
 
@@ -855,226 +410,56 @@ step="5">
 
 <div class="buttons">
 
-<button class="pause"
-id="pause">
-
-Ⅱ Pause Simulation
-
+<button id="pauseBtn">
+Pause Simulation
 </button>
 
-
-<button class="auto"
-id="auto">
-
-▶ Automatic Target Movement
-
+<button id="autoBtn">
+Automatic Target Movement
 </button>
 
-
-<button class="reset"
-id="reset">
-
-↻ Reset
-
+<button id="resetBtn">
+Reset
 </button>
 
 </div>
 
 
+<div class="status" id="status">
+● Real-Time Active
 </div>
-
-
-<!-- ========================================================
-MEASUREMENT CHAIN
-======================================================== -->
-
-<div class="chain">
-
-<div>
-
-MEASUREMENT CHAIN
 
 </div>
 
 
-<span class="chain-box source">
+<!-- MAIN SIMULATION -->
 
-● OPTICAL SOURCE
-
-</span>
-
-→
-
-
-<span class="chain-box medium">
-
-● OPTICAL MEDIUM
-
-</span>
-
-→
-
-
-<span class="chain-box detector">
-
-● PHOTODETECTOR
-
-</span>
-
-→
-
-
-<span class="chain-box electrical">
-
-● ELECTRICAL OUTPUT
-
-</span>
-
-</div>
-
-
-<!-- ========================================================
-MAIN SIMULATION
-======================================================== -->
-
-<div class="simulation">
-
-
-<div class="sim-heading">
-
-PHYSICAL BEAM CROSS-SECTION & INTENSITY DECAY
-
-</div>
-
+<div class="canvas-box">
 
 <canvas
-id="scene"
-width="1000"
-height="330">
+id="mainCanvas"
+width="1200"
+height="430">
 </canvas>
 
-
-<div class="sim-info">
-
-
-<div class="info">
-
-<div class="info-title">
-OPTICAL SOURCE
-</div>
-
-<div class="info-value"
-id="sourceInfo">
-
-10 mW
-
-</div>
-
 </div>
 
 
-<div class="info">
+<!-- MEASUREMENT CARDS -->
 
-<div class="info-title">
-WAVELENGTH
-</div>
-
-<div class="info-value"
-id="waveInfo">
-
-532 nm
-
-</div>
-
-</div>
-
-
-<div class="info">
-
-<div class="info-title">
-TARGET POSITION
-</div>
-
-<div class="info-value"
-id="targetInfo">
-
-50 cm
-
-</div>
-
-</div>
-
-
-<div class="info">
-
-<div class="info-title">
-DETECTOR
-</div>
-
-<div class="info-value">
-
-● ACTIVE
-
-</div>
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- ========================================================
-MEASUREMENT CARDS
-======================================================== -->
-
-<div class="measurements">
+<div class="cards">
 
 
 <div class="card">
 
-<div class="card-title">
+<h3>INPUT OPTICAL POWER</h3>
 
-OPTICAL INTENSITY
-
+<div class="big" id="inputPower">
+10.000
 </div>
 
-<div class="card-value"
-id="intensity">
-
-5.197
-
-</div>
-
-<div class="card-unit">
-
-W/m²
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="card-title">
-
-RECEIVED OPTICAL POWER
-
-</div>
-
-<div class="card-value"
-id="received">
-
-0.000
-
-</div>
-
-<div class="card-unit">
-
+<div class="unit">
 mW
-
 </div>
 
 </div>
@@ -1082,47 +467,59 @@ mW
 
 <div class="card">
 
-<div class="card-title">
+<h3>INPUT OPTICAL INTENSITY</h3>
 
-PHOTODETECTOR VOLTAGE
+<div class="big" id="inputIntensity">
+1000.000
+</div>
+
+<div class="unit">
+W/m²
+</div>
 
 </div>
 
-<div class="card-value"
-id="voltage">
 
-0.000
+<div class="card">
+
+<h3>RECEIVED OPTICAL POWER</h3>
+
+<div class="big" id="receivedPower">
+5.012
+</div>
+
+<div class="unit">
+mW
+</div>
 
 </div>
 
-<div class="card-unit">
 
+<div class="card">
+
+<h3>RECEIVED OPTICAL INTENSITY</h3>
+
+<div class="big" id="receivedIntensity">
+501.188
+</div>
+
+<div class="unit">
+W/m²
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>PHOTODETECTOR OUTPUT</h3>
+
+<div class="big" id="outputVoltage">
+2.506
+</div>
+
+<div class="unit">
 V
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="card-title">
-
-PHOTODIODE RESPONSIVITY
-
-</div>
-
-<div class="card-value"
-id="responsivity">
-
-0.000
-
-</div>
-
-<div class="card-unit">
-
-A/W
-
 </div>
 
 </div>
@@ -1131,59 +528,36 @@ A/W
 </div>
 
 
-<!-- ========================================================
-GRAPHS
-======================================================== -->
+<!-- GRAPHS -->
 
-<div class="graph-section">
+<div class="graphs">
 
 
-<div class="graph-card">
+<div class="graph">
 
-<div class="graph-title">
-
-◉ Optical Intensity vs Distance
-
-</div>
-
-<div class="graph-description">
-
-Intensity decreases with distance according to
-the inverse-square relationship.
-
-</div>
-
+<h2>
+Optical Intensity vs Distance
+</h2>
 
 <canvas
 id="intensityGraph"
-class="graph-canvas"
-width="600"
-height="270">
+width="650"
+height="330">
 </canvas>
 
 </div>
 
 
-<div class="graph-card">
+<div class="graph">
 
-<div class="graph-title">
-
-⚡ Photodetector Voltage vs Distance
-
-</div>
-
-<div class="graph-description">
-
-Electrical output produced by the photodetector.
-
-</div>
-
+<h2>
+Detector Output vs Optical Power
+</h2>
 
 <canvas
 id="voltageGraph"
-class="graph-canvas"
-width="600"
-height="270">
+width="650"
+height="330">
 </canvas>
 
 </div>
@@ -1192,49 +566,117 @@ height="270">
 </div>
 
 
-<!-- ========================================================
-THEORY
-======================================================== -->
+<!-- THEORY -->
 
 <div class="theory">
 
+<h2>
+Mathematical Model & Equations
+</h2>
+
+
+<div class="formula">
+
+<b>Primary Optical Intensity Formula:</b>
+
+<br><br>
+
+I = P / A
+
+</div>
+
+
+<div class="formula">
+
+<b>Received Optical Power after Attenuation:</b>
+
+<br><br>
+
+P<sub>rec</sub> =
+P<sub>in</sub> × 10<sup>−A<sub>dB</sub>/10</sup>
+
+</div>
+
+
+<div class="formula">
+
+<b>Distance Relationship:</b>
+
+<br><br>
+
+I(d) =
+I<sub>0</sub> × (d<sub>0</sub>/d)<sup>2</sup>
+
+</div>
+
+
+<div class="formula">
+
+<b>Photodetector Output:</b>
+
+<br><br>
+
+V<sub>out</sub> =
+R × P<sub>rec</sub>
+
+</div>
+
+
+<div class="relationships">
+
 <h3>
-
 Key Optical Relationships
-
 </h3>
 
 
-<div class="formula">
+<div class="relationship">
 
-Optical Intensity:
-I ∝ P / d²
+<b>Optical Intensity:</b>
 
-</div>
-
-
-<div class="formula">
-
-Photodiode Current:
-Iph = R × P
+I = P / A
 
 </div>
 
 
-<div class="formula">
+<div class="relationship">
 
-Detector Voltage:
-Vout = Iph × G
+<b>Distance Dependence:</b>
+
+I(d) = I₀ × (d₀/d)²
+
+</div>
+
+
+<div class="relationship">
+
+<b>Attenuated Power:</b>
+
+P<sub>rec</sub> =
+P<sub>in</sub> × 10<sup>−A<sub>dB</sub>/10</sup>
 
 </div>
 
 
-<div class="formula">
+<div class="relationship">
 
-Wavelength:
-λ = 450 – 650 nm
+<b>Detector Output:</b>
+
+V<sub>out</sub> = R × P<sub>rec</sub>
 
 </div>
+
+
+</div>
+
+
+<p>
+
+The primary optical intensity is calculated from optical power
+and illuminated area using <b>I = P/A</b>.
+The distance relationship is shown separately using the simplified
+inverse-square spreading model.
+
+</p>
 
 </div>
 
@@ -1245,540 +687,376 @@ Wavelength:
 <script>
 
 
-// ==========================================================
-// GLOBAL VARIABLES
-// ==========================================================
+// ============================================================
+// CANVAS
+// ============================================================
 
-const scene =
-document.getElementById("scene");
+const canvas =
+document.getElementById("mainCanvas");
 
 const ctx =
-scene.getContext("2d");
+canvas.getContext("2d");
 
 
-const intensityCanvas =
-document.getElementById(
-    "intensityGraph"
-);
+const intensityGraph =
+document.getElementById("intensityGraph");
 
-const intensityCtx =
-intensityCanvas.getContext(
-    "2d"
-);
+const ig =
+intensityGraph.getContext("2d");
 
 
-const voltageCanvas =
-document.getElementById(
-    "voltageGraph"
-);
+const voltageGraph =
+document.getElementById("voltageGraph");
 
-const voltageCtx =
-voltageCanvas.getContext(
-    "2d"
-);
+const vg =
+voltageGraph.getContext("2d");
 
 
-const distanceSlider =
-document.getElementById(
-    "distance"
-);
+// ============================================================
+// CONTROLS
+// ============================================================
 
-const wavelengthSelect =
-document.getElementById(
-    "wavelength"
-);
+const wavelength =
+document.getElementById("wavelength");
 
-const powerSlider =
-document.getElementById(
-    "power"
-);
+const power =
+document.getElementById("power");
 
-const reflectSlider =
-document.getElementById(
-    "reflect"
-);
+const attenuation =
+document.getElementById("attenuation");
 
+const distance =
+document.getElementById("distance");
 
-let running = true;
+const area =
+document.getElementById("area");
 
-let automatic = false;
+const responsivity =
+document.getElementById("responsivity");
 
-let particlePosition = 0;
+const noise =
+document.getElementById("noise");
 
-let direction = 1;
 
+let paused = false;
 
-// ==========================================================
-// WAVELENGTH COLOR
-// ==========================================================
+let autoMove = false;
 
-function getColor(w){
+let animationTime = 0;
 
-    if(w <= 480)
-        return "#2475ff";
 
-    if(w <= 520)
-        return "#00d9ff";
+// Reference distance
 
-    if(w <= 570)
-        return "#25ef68";
+const d0 = 10;
 
-    if(w <= 610)
-        return "#ffc400";
 
-    return "#ff3030";
+// ============================================================
+// NORMAL DECIMAL DISPLAY
+// NO SCIENTIFIC NOTATION
+// ============================================================
 
-}
-
-
-// ==========================================================
-// PHOTODIODE RESPONSIVITY
-// ==========================================================
-
-function getResponsivity(w){
-
-    const wl = [
-
-        400,
-        450,
-        500,
-        550,
-        600,
-        650,
-        700
-
-    ];
-
-
-    const r = [
-
-        0.10,
-        0.20,
-        0.30,
-        0.38,
-        0.48,
-        0.55,
-        0.60
-
-    ];
-
-
-    for(
-        let i=0;
-        i<wl.length-1;
-        i++
-    ){
-
-        if(
-            w >= wl[i] &&
-            w <= wl[i+1]
-        ){
-
-            const fraction =
-                (w-wl[i]) /
-                (wl[i+1]-wl[i]);
-
-
-            return r[i] +
-                fraction *
-                (r[i+1]-r[i]);
-
-        }
-
-    }
-
-
-    return 0.55;
-
-}
-
-
-// ==========================================================
-// OPTICAL MODEL
-// ==========================================================
-
-function calculate(){
-
-    const d =
-        Number(
-            distanceSlider.value
-        );
-
-
-    const w =
-        Number(
-            wavelengthSelect.value
-        );
-
-
-    const p =
-        Number(
-            powerSlider.value
-        );
-
-
-    const reflect =
-        Number(
-            reflectSlider.value
-        ) / 100;
-
-
-    /*
-       Laser power in watts
-    */
-
-    const powerW =
-        p / 1000;
-
-
-    /*
-       Distance in metres
-    */
-
-    const distanceM =
-        d / 100;
-
-
-    /*
-       Base optical intensity
-    */
-
-    const baseIntensity =
-        powerW /
-        (
-            4 *
-            Math.PI *
-            distanceM *
-            distanceM
-        );
-
-
-    /*
-       Wavelength response
-    */
-
-    const wavelengthFactor =
-        0.85 +
-        0.15 *
-        Math.cos(
-            (w-550)/100
-        );
-
-
-    /*
-       Reflected intensity
-    */
-
-    const rawIntensity =
-        baseIntensity *
-        reflect *
-        wavelengthFactor;
-
-
-    /*
-       DISPLAY SCALING
-
-       This converts the physical result
-       into a convenient project-display
-       value without scientific notation.
-
-       The displayed value remains
-       proportional to P/d².
-    */
-
-    const intensity =
-        rawIntensity * 100;
-
-
-    /*
-       Detector aperture
-    */
-
-    const aperture =
-        0.00001;
-
-
-    /*
-       Received optical power
-    */
-
-    const receivedPower =
-        rawIntensity *
-        aperture;
-
-
-    /*
-       Photodiode responsivity
-    */
-
-    const R =
-        getResponsivity(w);
-
-
-    /*
-       Photocurrent
-    */
-
-    const photocurrent =
-        receivedPower *
-        R;
-
-
-    /*
-       Transimpedance gain
-    */
-
-    const gain =
-        100000;
-
-
-    /*
-       Voltage
-    */
-
-    const voltage =
-        photocurrent *
-        gain;
-
-
-    return {
-
-        distance:d,
-
-        wavelength:w,
-
-        power:p,
-
-        reflectivity:reflect,
-
-        intensity:intensity,
-
-        rawIntensity:rawIntensity,
-
-        receivedPower:
-            receivedPower * 1000,
-
-        responsivity:R,
-
-        voltage:voltage
-
-    };
-
-}
-
-
-// ==========================================================
-// DECIMAL FORMAT
-// ==========================================================
-
-function formatNumber(value, decimals=3){
+function fixed(value, decimals=3){
 
     if(!isFinite(value))
         return "0.000";
 
     return Number(value).toFixed(decimals);
+}
+
+
+// ============================================================
+// MAIN CALCULATION
+// ============================================================
+
+function calculate(){
+
+
+    // --------------------------------------------------------
+    // INPUT POWER
+    // --------------------------------------------------------
+
+    const p_mW =
+        Number(power.value);
+
+    const p_W =
+        p_mW / 1000;
+
+
+    // --------------------------------------------------------
+    // ATTENUATION
+    // --------------------------------------------------------
+
+    const att =
+        Number(attenuation.value);
+
+
+    // --------------------------------------------------------
+    // DISTANCE
+    // --------------------------------------------------------
+
+    const d_cm =
+        Number(distance.value);
+
+
+    // --------------------------------------------------------
+    // AREA
+    // mm² -> m²
+    // --------------------------------------------------------
+
+    const detectorArea_mm2 =
+        Number(area.value);
+
+    const detectorArea_m2 =
+        detectorArea_mm2 * 1e-6;
+
+
+    // --------------------------------------------------------
+    // RESPONSIVITY
+    // --------------------------------------------------------
+
+    const R =
+        Number(responsivity.value);
+
+
+    // ========================================================
+    // PRIMARY FORMULA
+    //
+    // I = P / A
+    // ========================================================
+
+    const inputIntensity =
+        p_W / detectorArea_m2;
+
+
+    // ========================================================
+    // ATTENUATION
+    //
+    // P_rec = P_in × 10^(-A/10)
+    // ========================================================
+
+    const receivedPower_W =
+        p_W *
+        Math.pow(10,-att/10);
+
+
+    // ========================================================
+    // REFERENCE INTENSITY
+    //
+    // I0 = P_rec / A
+    // ========================================================
+
+    const referenceIntensity =
+        receivedPower_W /
+        detectorArea_m2;
+
+
+    // ========================================================
+    // DISTANCE RELATIONSHIP
+    //
+    // I(d) = I0 × (d0/d)^2
+    // ========================================================
+
+    const distanceFactor =
+        Math.pow(d0/d_cm,2);
+
+
+    const receivedIntensity =
+        referenceIntensity *
+        distanceFactor;
+
+
+    // ========================================================
+    // PHOTODETECTOR
+    //
+    // Vout = R × Prec
+    // ========================================================
+
+    const outputVoltage =
+        R *
+        receivedPower_W;
+
+
+    return {
+
+        p_mW:p_mW,
+
+        p_W:p_W,
+
+        att:att,
+
+        d_cm:d_cm,
+
+        detectorArea_mm2:
+            detectorArea_mm2,
+
+        detectorArea_m2:
+            detectorArea_m2,
+
+        R:R,
+
+        inputIntensity:
+            inputIntensity,
+
+        receivedPower_W:
+            receivedPower_W,
+
+        receivedPower_mW:
+            receivedPower_W*1000,
+
+        referenceIntensity:
+            referenceIntensity,
+
+        distanceFactor:
+            distanceFactor,
+
+        receivedIntensity:
+            receivedIntensity,
+
+        outputVoltage:
+            outputVoltage
+    };
 
 }
 
 
-// ==========================================================
-// UPDATE VALUES
-// ==========================================================
+// ============================================================
+// UPDATE UI
+// ============================================================
 
-function updateValues(){
+function update(){
+
 
     const r =
         calculate();
 
 
-    document.getElementById(
-        "waveValue"
-    ).innerText =
-        r.wavelength +
-        " nm";
+    document.getElementById("powerVal")
+        .textContent =
+        fixed(r.p_mW,1);
 
 
-    document.getElementById(
-        "distanceValue"
-    ).innerText =
-        r.distance +
-        " cm";
+    document.getElementById("attenuationVal")
+        .textContent =
+        fixed(r.att,1);
 
 
-    document.getElementById(
-        "powerValue"
-    ).innerText =
-        r.power +
-        " mW";
+    document.getElementById("distanceVal")
+        .textContent =
+        fixed(r.d_cm,0);
 
 
-    document.getElementById(
-        "reflectValue"
-    ).innerText =
-        (
-            r.reflectivity * 100
-        ).toFixed(0)
-        +
-        " %";
+    document.getElementById("areaVal")
+        .textContent =
+        fixed(r.detectorArea_mm2,1);
 
 
-    document.getElementById(
-        "sourceInfo"
-    ).innerText =
-        r.power.toFixed(1)
-        +
-        " mW";
+    document.getElementById("responsivityVal")
+        .textContent =
+        fixed(r.R,0);
 
 
-    document.getElementById(
-        "waveInfo"
-    ).innerText =
-        r.wavelength
-        +
-        " nm";
+    document.getElementById("noiseVal")
+        .textContent =
+        fixed(Number(noise.value),0);
 
 
-    document.getElementById(
-        "targetInfo"
-    ).innerText =
-        r.distance.toFixed(0)
-        +
-        " cm";
+    document.getElementById("inputPower")
+        .textContent =
+        fixed(r.p_mW,3);
 
 
-    /*
-       NORMAL DECIMAL DISPLAY
-       NO e+3 / e-3
-    */
-
-    document.getElementById(
-        "intensity"
-    ).innerText =
-        formatNumber(
-            r.intensity,
-            3
-        );
+    document.getElementById("inputIntensity")
+        .textContent =
+        fixed(r.inputIntensity,3);
 
 
-    document.getElementById(
-        "received"
-    ).innerText =
-        formatNumber(
-            r.receivedPower,
-            3
-        );
+    document.getElementById("receivedPower")
+        .textContent =
+        fixed(r.receivedPower_mW,3);
 
 
-    document.getElementById(
-        "voltage"
-    ).innerText =
-        formatNumber(
-            r.voltage,
-            3
-        );
+    document.getElementById("receivedIntensity")
+        .textContent =
+        fixed(r.receivedIntensity,3);
 
 
-    document.getElementById(
-        "responsivity"
-    ).innerText =
-        formatNumber(
-            r.responsivity,
-            3
-        );
+    document.getElementById("outputVoltage")
+        .textContent =
+        fixed(r.outputVoltage,3);
+
+
+    drawMain(r);
+
+    drawIntensityGraph(r);
+
+    drawVoltageGraph(r);
 
 }
 
 
-// ==========================================================
-// DRAW MAIN SCENE
-// ==========================================================
+// ============================================================
+// MAIN LASER SIMULATION
+// ============================================================
 
-function drawScene(){
-
-    const W =
-        scene.width;
-
-    const H =
-        scene.height;
+function drawMain(r){
 
 
     ctx.clearRect(
         0,
         0,
-        W,
-        H
+        canvas.width,
+        canvas.height
     );
 
 
+    // Background
+
+    const grad =
+        ctx.createLinearGradient(
+            0,
+            0,
+            0,
+            canvas.height
+        );
+
+    grad.addColorStop(
+        0,
+        "#071321"
+    );
+
+    grad.addColorStop(
+        1,
+        "#02070d"
+    );
+
     ctx.fillStyle =
-        "#08172e";
+        grad;
 
     ctx.fillRect(
         0,
         0,
-        W,
-        H
+        canvas.width,
+        canvas.height
     );
 
 
-    const r =
-        calculate();
-
-
-    const color =
-        getColor(
-            r.wavelength
-        );
-
-
-    const laserX =
-        70;
-
-
-    const targetX =
-        160 +
-        (
-            (r.distance-10)/90
-        ) *
-        (
-            W-350
-        );
-
-
-    const detectorX =
-        W-80;
-
-
-    const centerY =
-        H/2;
-
-
-    // ======================================================
-    // GRID
-    // ======================================================
+    // Grid
 
     ctx.strokeStyle =
-        "rgba(150,170,200,.08)";
+        "#123047";
 
     ctx.lineWidth = 1;
 
 
-    for(
-        let x=0;
-        x<W;
-        x+=50
-    ){
+    for(let x=0;x<canvas.width;x+=50){
 
         ctx.beginPath();
 
-        ctx.moveTo(
-            x,
-            0
-        );
+        ctx.moveTo(x,0);
 
         ctx.lineTo(
             x,
-            H
+            canvas.height
         );
 
         ctx.stroke();
@@ -1786,1112 +1064,1093 @@ function drawScene(){
     }
 
 
-    // ======================================================
-    // LASER
-    // ======================================================
-
-    ctx.fillStyle =
-        "#e52d4e";
-
-
-    ctx.fillRect(
-
-        laserX-12,
-
-        centerY-35,
-
-        20,
-
-        70
-
-    );
-
-
-    ctx.fillStyle =
-        "#ff6c82";
-
-
-    ctx.fillRect(
-
-        laserX+8,
-
-        centerY-10,
-
-        30,
-
-        20
-
-    );
-
-
-    ctx.fillStyle =
-        "#ffffff";
-
-
-    ctx.font =
-        "bold 13px Arial";
-
-
-    ctx.fillText(
-
-        "LASER",
-
-        laserX-20,
-
-        centerY+55
-
-    );
-
-
-    // ======================================================
-    // MAIN BEAM
-    // ======================================================
-
-    const gradient =
-        ctx.createLinearGradient(
-
-            laserX,
-
-            0,
-
-            targetX,
-
-            0
-
-        );
-
-
-    gradient.addColorStop(
-        0,
-        color
-    );
-
-
-    gradient.addColorStop(
-        1,
-        "rgba(255,255,255,0.04)"
-    );
-
-
-    ctx.strokeStyle =
-        gradient;
-
-
-    ctx.lineWidth = 6;
-
-
-    ctx.shadowBlur = 20;
-
-    ctx.shadowColor =
-        color;
-
-
-    ctx.beginPath();
-
-
-    ctx.moveTo(
-
-        laserX+30,
-
-        centerY
-
-    );
-
-
-    ctx.lineTo(
-
-        targetX,
-
-        centerY
-
-    );
-
-
-    ctx.stroke();
-
-
-    ctx.shadowBlur = 0;
-
-
-    // ======================================================
-    // MOVING LIGHT PARTICLES
-    // ======================================================
-
-    for(
-        let i=0;
-        i<14;
-        i++
-    ){
-
-        const beamLength =
-            Math.max(
-                40,
-                targetX-laserX-30
-            );
-
-
-        const px =
-            laserX+30+
-            (
-                particlePosition+
-                i*45
-            ) %
-            beamLength;
-
+    for(let y=0;y<canvas.height;y+=50){
 
         ctx.beginPath();
 
+        ctx.moveTo(0,y);
 
-        ctx.fillStyle =
-            color;
-
-
-        ctx.shadowBlur = 12;
-
-        ctx.shadowColor =
-            color;
-
-
-        ctx.arc(
-
-            px,
-
-            centerY,
-
-            3,
-
-            0,
-
-            Math.PI*2
-
+        ctx.lineTo(
+            canvas.width,
+            y
         );
 
-
-        ctx.fill();
-
-
-        ctx.shadowBlur = 0;
+        ctx.stroke();
 
     }
 
 
-    // ======================================================
-    // TARGET
-    // ======================================================
+    const laserX = 100;
 
-    ctx.strokeStyle =
-        "#ff2da8";
+    const laserY = 215;
 
+    const detectorX = 1040;
 
-    ctx.lineWidth = 5;
+    const detectorY = 215;
 
 
-    ctx.shadowBlur = 15;
+    // Laser body
 
-    ctx.shadowColor =
-        "#ff2da8";
+    ctx.fillStyle =
+        "#202d3c";
 
-
-    ctx.strokeRect(
-
-        targetX-12,
-
-        centerY-65,
-
-        24,
-
-        130
-
+    ctx.fillRect(
+        45,
+        175,
+        100,
+        80
     );
 
 
-    ctx.shadowBlur = 0;
+    ctx.strokeStyle =
+        "#6b8aa3";
+
+    ctx.strokeRect(
+        45,
+        175,
+        100,
+        80
+    );
 
 
     ctx.fillStyle =
-        "#ff79c8";
-
+        "#d8f7ff";
 
     ctx.font =
-        "bold 13px Arial";
-
+        "bold 14px Arial";
 
     ctx.fillText(
-
-        "TARGET",
-
-        targetX-25,
-
-        centerY-80
-
+        "LASER",
+        65,
+        165
     );
 
 
-    // ======================================================
-    // REFLECTED BEAM
-    // ======================================================
+    // Laser point
 
-    ctx.strokeStyle =
-        color;
+    ctx.fillStyle =
+        "#ff263d";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        laserX,
+        laserY,
+        12,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
 
 
-    ctx.lineWidth = 3;
+    // Beam
 
-    ctx.globalAlpha =
-        0.65;
+    const beamGradient =
+        ctx.createLinearGradient(
+            laserX,
+            0,
+            detectorX,
+            0
+        );
+
+
+    beamGradient.addColorStop(
+        0,
+        "rgba(255,40,50,0.85)"
+    );
+
+    beamGradient.addColorStop(
+        0.5,
+        "rgba(255,80,60,0.35)"
+    );
+
+    beamGradient.addColorStop(
+        1,
+        "rgba(255,100,70,0.08)"
+    );
+
+
+    ctx.fillStyle =
+        beamGradient;
 
 
     ctx.beginPath();
 
-
     ctx.moveTo(
-
-        targetX+15,
-
-        centerY
-
+        laserX,
+        laserY-8
     );
-
 
     ctx.lineTo(
-
         detectorX,
-
-        centerY
-
+        laserY-28
     );
 
+    ctx.lineTo(
+        detectorX,
+        laserY+28
+    );
+
+    ctx.lineTo(
+        laserX,
+        laserY+8
+    );
+
+    ctx.closePath();
+
+    ctx.fill();
+
+
+    // Beam center
+
+    ctx.strokeStyle =
+        "#ff4654";
+
+    ctx.lineWidth = 3;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        laserX,
+        laserY
+    );
+
+    ctx.lineTo(
+        detectorX,
+        laserY
+    );
 
     ctx.stroke();
 
 
-    ctx.globalAlpha = 1;
+    // Animated particles
+
+    if(!paused){
+
+        animationTime += 0.03;
+
+    }
 
 
-    // ======================================================
-    // PHOTODETECTOR
-    // ======================================================
+    for(let i=0;i<16;i++){
+
+        const px =
+            laserX +
+            (
+                (
+                    animationTime*150 +
+                    i*75
+                )
+                %
+                (detectorX-laserX)
+            );
+
+
+        ctx.fillStyle =
+            "#ffbdc4";
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            px,
+            laserY,
+            2.5,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+    }
+
+
+    // Detector
 
     ctx.fillStyle =
-        "#8247f5";
-
+        "#1c3347";
 
     ctx.fillRect(
-
-        detectorX-15,
-
-        centerY-38,
-
-        25,
-
-        76
-
+        detectorX,
+        170,
+        90,
+        90
     );
 
-
-    ctx.fillStyle =
-        "#25e6a0";
-
-
-    ctx.fillRect(
-
-        detectorX+10,
-
-        centerY-18,
-
-        22,
-
-        36
-
-    );
-
-
-    ctx.fillStyle =
-        "#ffffff";
-
-
-    ctx.font =
-        "11px Arial";
-
-
-    ctx.fillText(
-
-        "PHOTODETECTOR",
-
-        detectorX-52,
-
-        centerY+58
-
-    );
-
-
-    // ======================================================
-    // DISTANCE MARKER
-    // ======================================================
 
     ctx.strokeStyle =
-        "#9aa9bf";
+        "#5f9fc2";
 
+    ctx.strokeRect(
+        detectorX,
+        170,
+        90,
+        90
+    );
+
+
+    ctx.fillStyle =
+        "#65eaff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        detectorX,
+        detectorY,
+        25,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "#dffaff";
+
+    ctx.font =
+        "bold 14px Arial";
+
+    ctx.fillText(
+        "PHOTODETECTOR",
+        970,
+        150
+    );
+
+
+    // Distance line
+
+    ctx.strokeStyle =
+        "#9ebbd0";
 
     ctx.lineWidth = 1;
 
 
     ctx.beginPath();
 
-
     ctx.moveTo(
-
         laserX,
-
-        H-35
-
+        315
     );
-
 
     ctx.lineTo(
-
-        targetX,
-
-        H-35
-
+        detectorX,
+        315
     );
 
+    ctx.stroke();
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        laserX,
+        305
+    );
+
+    ctx.lineTo(
+        laserX,
+        325
+    );
+
+    ctx.stroke();
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        detectorX,
+        305
+    );
+
+    ctx.lineTo(
+        detectorX,
+        325
+    );
 
     ctx.stroke();
 
 
     ctx.fillStyle =
-        "#d8dfeb";
-
+        "#c9e5f5";
 
     ctx.font =
-        "bold 14px Arial";
+        "16px Arial";
+
+    ctx.textAlign =
+        "center";
 
 
     ctx.fillText(
-
-        r.distance.toFixed(0)
-        + " cm",
-
-        (
-            laserX+
-            targetX
-        )/2-20,
-
-        H-45
-
+        "Distance = " +
+        r.d_cm +
+        " cm",
+        570,
+        345
     );
 
 
-    // ======================================================
-    // LIVE INTENSITY
-    // ======================================================
+    // Live intensity
 
     ctx.fillStyle =
-        "#ffd52b";
-
+        "#55e2ff";
 
     ctx.font =
-        "bold 15px monospace";
+        "bold 22px Arial";
 
 
     ctx.fillText(
-
-        "OPTICAL INTENSITY = "
-        +
-        formatNumber(
-            r.intensity,
-            3
-        )
-        +
+        "I = " +
+        fixed(r.receivedIntensity,3) +
         " W/m²",
-
-        25,
-
-        28
-
+        600,
+        90
     );
 
 
     ctx.fillStyle =
-        "#a5b2c8";
-
+        "#aac7d8";
 
     ctx.font =
-        "13px monospace";
+        "15px Arial";
 
 
     ctx.fillText(
-
-        "λ = "
-        +
-        r.wavelength
-        +
-        " nm",
-
-        25,
-
-        50
-
+        "I = P / A   |   A = " +
+        fixed(r.detectorArea_mm2,1) +
+        " mm²",
+        600,
+        115
     );
+
+
+    ctx.textAlign =
+        "left";
 
 }
 
 
-// ==========================================================
-// GRAPH FUNCTION
-// ==========================================================
+// ============================================================
+// INTENSITY VS DISTANCE GRAPH
+// ============================================================
 
-function drawGraph(
-    canvas,
-    context,
-    type
-){
-
-    const W =
-        canvas.width;
-
-    const H =
-        canvas.height;
+function drawIntensityGraph(r){
 
 
-    context.clearRect(
+    const w =
+        intensityGraph.width;
+
+    const h =
+        intensityGraph.height;
+
+
+    ig.clearRect(
         0,
         0,
-        W,
-        H
+        w,
+        h
     );
 
 
-    context.fillStyle =
-        "#ffffff";
+    ig.fillStyle =
+        "#07111c";
 
-
-    context.fillRect(
+    ig.fillRect(
         0,
         0,
-        W,
-        H
+        w,
+        h
     );
 
 
-    const left = 55;
+    const left = 65;
 
-    const right = 15;
+    const right = 25;
 
-    const top = 20;
+    const top = 25;
 
-    const bottom = 45;
+    const bottom = 50;
 
+    const gw =
+        w-left-right;
 
-    const graphW =
-        W-left-right;
-
-    const graphH =
-        H-top-bottom;
-
-
-    const distances = [];
-
-    const values = [];
+    const gh =
+        h-top-bottom;
 
 
-    // ======================================================
-    // CALCULATE CURVE
-    // ======================================================
-
-    for(
-        let d=10;
-        d<=100;
-        d+=1
-    ){
-
-        const w =
-            Number(
-                wavelengthSelect.value
-            );
+    let maxI =
+        r.referenceIntensity;
 
 
-        const p =
-            Number(
-                powerSlider.value
-            );
+    if(r.d_cm < d0){
 
-
-        const refl =
-            Number(
-                reflectSlider.value
-            )/100;
-
-
-        const powerW =
-            p/1000;
-
-
-        const dm =
-            d/100;
-
-
-        const base =
-            powerW/
-            (
-                4*Math.PI*
-                dm*dm
-            );
-
-
-        const wavelengthFactor =
-            0.85+
-            0.15*
-            Math.cos(
-                (w-550)/100
-            );
-
-
-        const rawIntensity =
-            base*
-            refl*
-            wavelengthFactor;
-
-
-        /*
-           Same scaling used in
-           the measurement card
-        */
-
-        const intensity =
-            rawIntensity*100;
-
-
-        const aperture =
-            0.00001;
-
-
-        const received =
-            rawIntensity*
-            aperture;
-
-
-        const R =
-            getResponsivity(w);
-
-
-        const voltage =
-            received*
-            R*
-            100000;
-
-
-        distances.push(d);
-
-
-        if(type==="intensity"){
-
-            values.push(
-                intensity
-            );
-
-        }
-        else{
-
-            values.push(
-                voltage
-            );
-
-        }
+        maxI =
+            r.receivedIntensity;
 
     }
 
 
-    let min =
-        Math.min(...values);
+    if(maxI <= 0)
+        maxI = 1;
 
 
-    let max =
-        Math.max(...values);
+    maxI *= 1.1;
 
 
-    if(max===min){
+    // Grid
 
-        max += 1;
+    ig.strokeStyle =
+        "#183246";
 
-        min -= 1;
-
-    }
-
-
-    // ======================================================
-    // GRID
-    // ======================================================
-
-    context.strokeStyle =
-        "#e4e8f0";
-
-    context.lineWidth = 1;
+    ig.lineWidth = 1;
 
 
-    for(
-        let i=0;
-        i<=5;
-        i++
-    ){
+    for(let i=0;i<=5;i++){
 
         const y =
-            top+
-            graphH*i/5;
+            top +
+            gh -
+            (i/5)*gh;
 
 
-        context.beginPath();
+        ig.beginPath();
 
-
-        context.moveTo(
+        ig.moveTo(
             left,
             y
         );
 
-
-        context.lineTo(
-            W-right,
+        ig.lineTo(
+            left+gw,
             y
         );
 
+        ig.stroke();
 
-        context.stroke();
+
+        ig.fillStyle =
+            "#9bb7c9";
+
+        ig.font =
+            "11px Arial";
 
 
         const val =
-            max-
-            (
-                max-min
-            )*i/5;
+            maxI*(i/5);
 
 
-        context.fillStyle =
-            "#6c7788";
-
-
-        context.font =
-            "10px Arial";
-
-
-        /*
-           NO SCIENTIFIC NOTATION
-        */
-
-        let label;
-
-
-        if(type==="intensity"){
-
-            label =
-                val.toFixed(2);
-
-        }
-        else{
-
-            label =
-                val.toFixed(3);
-
-        }
-
-
-        context.fillText(
-
-            label,
-
-            3,
-
-            y+3
-
+        ig.fillText(
+            fixed(val,2),
+            5,
+            y+4
         );
 
     }
 
 
-    // ======================================================
-    // X AXIS
-    // ======================================================
+    // Axes
 
-    for(
-        let i=0;
-        i<=5;
-        i++
-    ){
+    ig.strokeStyle =
+        "#7594a9";
 
-        const x =
-            left+
-            graphW*i/5;
+    ig.lineWidth =
+        1.5;
 
 
-        context.beginPath();
+    ig.beginPath();
 
-
-        context.moveTo(
-            x,
-            top
-        );
-
-
-        context.lineTo(
-            x,
-            H-bottom
-        );
-
-
-        context.stroke();
-
-
-        context.fillStyle =
-            "#6c7788";
-
-
-        context.font =
-            "10px Arial";
-
-
-        context.fillText(
-
-            (
-                10+
-                90*i/5
-            ).toFixed(0),
-
-            x-8,
-
-            H-27
-
-        );
-
-    }
-
-
-    // ======================================================
-    // AXIS LABEL
-    // ======================================================
-
-    context.fillStyle =
-        "#4e596c";
-
-
-    context.font =
-        "bold 11px Arial";
-
-
-    context.fillText(
-
-        "Distance (cm)",
-
-        W/2-40,
-
-        H-8
-
-    );
-
-
-    // ======================================================
-    // CURVE
-    // ======================================================
-
-    context.strokeStyle =
-        "#5737cf";
-
-
-    context.lineWidth = 3;
-
-
-    context.beginPath();
-
-
-    for(
-        let i=0;
-        i<distances.length;
-        i++
-    ){
-
-        const x =
-            left+
-            (
-                (distances[i]-10)/90
-            )*
-            graphW;
-
-
-        const y =
-            top+
-            (
-                1-
-                (
-                    (values[i]-min)/
-                    (max-min)
-                )
-            )*
-            graphH;
-
-
-        if(i===0){
-
-            context.moveTo(
-                x,
-                y
-            );
-
-        }
-        else{
-
-            context.lineTo(
-                x,
-                y
-            );
-
-        }
-
-    }
-
-
-    context.stroke();
-
-
-    // ======================================================
-    // CURRENT DISTANCE MARKER
-    // ======================================================
-
-    const currentDistance =
-        Number(
-            distanceSlider.value
-        );
-
-
-    const markerX =
-        left+
-        (
-            (currentDistance-10)/90
-        )*
-        graphW;
-
-
-    context.strokeStyle =
-        "#ff3b81";
-
-
-    context.lineWidth = 2;
-
-
-    context.setLineDash(
-        [6,5]
-    );
-
-
-    context.beginPath();
-
-
-    context.moveTo(
-        markerX,
+    ig.moveTo(
+        left,
         top
     );
 
+    ig.lineTo(
+        left,
+        h-bottom
+    );
 
-    context.lineTo(
-        markerX,
-        H-bottom
+    ig.lineTo(
+        w-right,
+        h-bottom
+    );
+
+    ig.stroke();
+
+
+    // Curve
+
+    ig.strokeStyle =
+        "#55dfff";
+
+    ig.lineWidth = 3;
+
+
+    ig.beginPath();
+
+
+    for(let x=0;x<=100;x++){
+
+        const d =
+            1+x*99/100;
+
+
+        const intensity =
+            r.referenceIntensity *
+            Math.pow(d0/d,2);
+
+
+        const px =
+            left +
+            (x/100)*gw;
+
+
+        const py =
+            top +
+            gh -
+            (intensity/maxI)*gh;
+
+
+        if(x===0){
+
+            ig.moveTo(
+                px,
+                py
+            );
+
+        }else{
+
+            ig.lineTo(
+                px,
+                py
+            );
+
+        }
+
+    }
+
+
+    ig.stroke();
+
+
+    // Current point
+
+    const currentX =
+        left +
+        ((r.d_cm-1)/99)*gw;
+
+
+    const currentIntensity =
+        r.receivedIntensity;
+
+
+    const currentY =
+        top +
+        gh -
+        (currentIntensity/maxI)*gh;
+
+
+    ig.fillStyle =
+        "#ff5364";
+
+
+    ig.beginPath();
+
+    ig.arc(
+        currentX,
+        currentY,
+        6,
+        0,
+        Math.PI*2
+    );
+
+    ig.fill();
+
+
+    // Labels
+
+    ig.fillStyle =
+        "#b7d1e1";
+
+    ig.font =
+        "12px Arial";
+
+
+    ig.fillText(
+        "Distance (cm)",
+        w/2,
+        h-12
     );
 
 
-    context.stroke();
+    ig.save();
+
+    ig.translate(
+        15,
+        h/2
+    );
+
+    ig.rotate(
+        -Math.PI/2
+    );
 
 
-    context.setLineDash([]);
+    ig.fillText(
+        "Intensity (W/m²)",
+        0,
+        0
+    );
 
 
-    // ======================================================
-    // CURRENT POINT
-    // ======================================================
-
-    const currentResult =
-        calculate();
+    ig.restore();
 
 
-    let currentValue;
+    ig.fillStyle =
+        "#55e2ff";
+
+    ig.font =
+        "bold 13px Arial";
 
 
-    if(type==="intensity"){
+    ig.fillText(
+        "Current: " +
+        fixed(currentIntensity,3) +
+        " W/m²",
+        left+10,
+        top+15
+    );
 
-        currentValue =
-            currentResult.intensity;
+}
+
+
+// ============================================================
+// VOLTAGE VS POWER GRAPH
+// ============================================================
+
+function drawVoltageGraph(r){
+
+
+    const w =
+        voltageGraph.width;
+
+    const h =
+        voltageGraph.height;
+
+
+    vg.clearRect(
+        0,
+        0,
+        w,
+        h
+    );
+
+
+    vg.fillStyle =
+        "#07111c";
+
+    vg.fillRect(
+        0,
+        0,
+        w,
+        h
+    );
+
+
+    const left = 60;
+
+    const right = 25;
+
+    const top = 25;
+
+    const bottom = 50;
+
+
+    const gw =
+        w-left-right;
+
+    const gh =
+        h-top-bottom;
+
+
+    const maxPower =
+        20;
+
+
+    const maxVoltage =
+        (maxPower/1000) *
+        r.R *
+        1.1;
+
+
+    // Grid
+
+    vg.strokeStyle =
+        "#183246";
+
+    vg.lineWidth = 1;
+
+
+    for(let i=0;i<=5;i++){
+
+        const y =
+            top+
+            gh-
+            (i/5)*gh;
+
+
+        vg.beginPath();
+
+        vg.moveTo(
+            left,
+            y
+        );
+
+        vg.lineTo(
+            left+gw,
+            y
+        );
+
+        vg.stroke();
+
+
+        vg.fillStyle =
+            "#9bb7c9";
+
+        vg.font =
+            "11px Arial";
+
+
+        vg.fillText(
+            fixed(
+                maxVoltage*i/5,
+                2
+            ),
+            5,
+            y+4
+        );
 
     }
-    else{
 
-        currentValue =
-            currentResult.voltage;
+
+    // Axes
+
+    vg.strokeStyle =
+        "#7594a9";
+
+
+    vg.beginPath();
+
+    vg.moveTo(
+        left,
+        top
+    );
+
+    vg.lineTo(
+        left,
+        h-bottom
+    );
+
+    vg.lineTo(
+        w-right,
+        h-bottom
+    );
+
+    vg.stroke();
+
+
+    // Voltage line
+
+    vg.strokeStyle =
+        "#73e8a8";
+
+    vg.lineWidth = 3;
+
+
+    vg.beginPath();
+
+
+    for(let x=0;x<=100;x++){
+
+        const p =
+            maxPower*x/100;
+
+
+        const pReceived =
+            (p/1000) *
+            Math.pow(
+                10,
+                -r.att/10
+            );
+
+
+        const v =
+            r.R*pReceived;
+
+
+        const px =
+            left+
+            (x/100)*gw;
+
+
+        const py =
+            top+
+            gh-
+            (v/maxVoltage)*gh;
+
+
+        if(x===0){
+
+            vg.moveTo(
+                px,
+                py
+            );
+
+        }else{
+
+            vg.lineTo(
+                px,
+                py
+            );
+
+        }
 
     }
+
+
+    vg.stroke();
+
+
+    // Current point
+
+    const currentX =
+        left+
+        (r.p_mW/maxPower)*gw;
 
 
     const currentY =
         top+
-        (
-            1-
-            (
-                (currentValue-min)/
-                (max-min)
-            )
-        )*
-        graphH;
+        gh-
+        (r.outputVoltage/maxVoltage)*gh;
 
 
-    context.fillStyle =
-        "#ff3b81";
+    vg.fillStyle =
+        "#ff5364";
 
 
-    context.beginPath();
+    vg.beginPath();
 
-
-    context.arc(
-
-        markerX,
-
+    vg.arc(
+        currentX,
         currentY,
-
-        5,
-
+        6,
         0,
-
         Math.PI*2
+    );
 
+    vg.fill();
+
+
+    vg.fillStyle =
+        "#b7d1e1";
+
+    vg.font =
+        "12px Arial";
+
+
+    vg.fillText(
+        "Optical Power (mW)",
+        w/2,
+        h-12
     );
 
 
-    context.fill();
+    vg.save();
 
+    vg.translate(
+        15,
+        h/2
+    );
 
-    // ======================================================
-    // GRAPH FORMULA
-    // ======================================================
-
-    context.fillStyle =
-        "#4d37b5";
-
-
-    context.font =
-        "bold 12px Arial";
-
-
-    if(type==="intensity"){
-
-        context.fillText(
-
-            "I ∝ 1/d²",
-
-            left+10,
-
-            15
-
-        );
-
-    }
-    else{
-
-        context.fillText(
-
-            "V = R × P × G",
-
-            left+10,
-
-            15
-
-        );
-
-    }
-
-}
-
-
-// ==========================================================
-// UPDATE ALL
-// ==========================================================
-
-function updateAll(){
-
-    updateValues();
-
-
-    drawGraph(
-
-        intensityCanvas,
-
-        intensityCtx,
-
-        "intensity"
-
+    vg.rotate(
+        -Math.PI/2
     );
 
 
-    drawGraph(
+    vg.fillText(
+        "Voltage (V)",
+        0,
+        0
+    );
 
-        voltageCanvas,
 
-        voltageCtx,
+    vg.restore();
 
-        "voltage"
 
+    vg.fillStyle =
+        "#73e8a8";
+
+    vg.font =
+        "bold 13px Arial";
+
+
+    vg.fillText(
+        "Current: " +
+        fixed(r.outputVoltage,3) +
+        " V",
+        left+10,
+        top+15
     );
 
 }
 
 
-// ==========================================================
+// ============================================================
+// INPUT EVENTS
+// ============================================================
+
+[
+    wavelength,
+    power,
+    attenuation,
+    distance,
+    area,
+    responsivity,
+    noise
+
+].forEach(function(el){
+
+    el.addEventListener(
+        "input",
+        update
+    );
+
+    el.addEventListener(
+        "change",
+        update
+    );
+
+});
+
+
+// ============================================================
+// PAUSE
+// ============================================================
+
+document.getElementById("pauseBtn")
+.addEventListener("click",function(){
+
+    paused =
+        !paused;
+
+
+    this.textContent =
+        paused
+        ? "Resume Simulation"
+        : "Pause Simulation";
+
+
+    document.getElementById("status")
+        .textContent =
+        paused
+        ? "● Simulation Paused"
+        : "● Real-Time Active";
+
+});
+
+
+// ============================================================
+// AUTOMATIC MOVEMENT
+// ============================================================
+
+document.getElementById("autoBtn")
+.addEventListener("click",function(){
+
+    autoMove =
+        !autoMove;
+
+
+    this.textContent =
+        autoMove
+        ? "Stop Automatic Movement"
+        : "Automatic Target Movement";
+
+});
+
+
+// ============================================================
+// RESET
+// ============================================================
+
+document.getElementById("resetBtn")
+.addEventListener("click",function(){
+
+    wavelength.value =
+        532;
+
+    power.value =
+        10;
+
+    attenuation.value =
+        3;
+
+    distance.value =
+        10;
+
+    area.value =
+        10;
+
+    responsivity.value =
+        500;
+
+    noise.value =
+        5;
+
+
+    autoMove =
+        false;
+
+
+    document.getElementById("autoBtn")
+        .textContent =
+        "Automatic Target Movement";
+
+
+    update();
+
+});
+
+
+// ============================================================
 // ANIMATION
-// ==========================================================
+// ============================================================
 
 function animate(){
 
-    if(running){
+    if(!paused){
 
-        particlePosition += 2;
-
-
-        if(automatic){
+        if(autoMove){
 
             let d =
-                Number(
-                    distanceSlider.value
-                );
+                Number(distance.value);
 
 
-            d +=
-                direction*0.4;
+            d += 0.25;
 
 
-            if(d>=100){
-
-                d=100;
-
-                direction=-1;
-
-            }
+            if(d > 100)
+                d = 10;
 
 
-            if(d<=10){
-
-                d=10;
-
-                direction=1;
-
-            }
-
-
-            distanceSlider.value =
-                Math.round(d);
+            distance.value =
+                d;
 
         }
 
 
-        updateAll();
+        update();
 
     }
-
-
-    drawScene();
 
 
     requestAnimationFrame(
@@ -2901,137 +2160,15 @@ function animate(){
 }
 
 
-// ==========================================================
-// PAUSE
-// ==========================================================
-
-document.getElementById(
-    "pause"
-).onclick=function(){
-
-    running =
-        !running;
-
-
-    this.innerText =
-        running
-        ?
-        "Ⅱ Pause Simulation"
-        :
-        "▶ Resume Simulation";
-
-};
-
-
-// ==========================================================
-// AUTOMATIC MOVEMENT
-// ==========================================================
-
-document.getElementById(
-    "auto"
-).onclick=function(){
-
-    automatic =
-        !automatic;
-
-
-    this.innerText =
-        automatic
-        ?
-        "■ Stop Automatic Movement"
-        :
-        "▶ Automatic Target Movement";
-
-};
-
-
-// ==========================================================
-// RESET
-// ==========================================================
-
-document.getElementById(
-    "reset"
-).onclick=function(){
-
-    distanceSlider.value =
-        50;
-
-
-    wavelengthSelect.value =
-        532;
-
-
-    powerSlider.value =
-        10;
-
-
-    reflectSlider.value =
-        70;
-
-
-    running =
-        true;
-
-
-    automatic =
-        false;
-
-
-    direction =
-        1;
-
-
-    particlePosition =
-        0;
-
-
-    document.getElementById(
-        "pause"
-    ).innerText =
-        "Ⅱ Pause Simulation";
-
-
-    document.getElementById(
-        "auto"
-    ).innerText =
-        "▶ Automatic Target Movement";
-
-
-    updateAll();
-
-};
-
-
-// ==========================================================
-// CONTROL EVENTS
-// ==========================================================
-
-distanceSlider.oninput =
-    updateAll;
-
-
-wavelengthSelect.onchange =
-    updateAll;
-
-
-powerSlider.oninput =
-    updateAll;
-
-
-reflectSlider.oninput =
-    updateAll;
-
-
-// ==========================================================
+// ============================================================
 // START
-// ==========================================================
+// ============================================================
 
-updateAll();
+update();
 
 animate();
 
 </script>
 
 </body>
-
 </html>
