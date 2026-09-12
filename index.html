@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 <html>
@@ -1181,13 +1180,8 @@ Key Optical Relationships
 <div class="formula">
 
 Optical Intensity:
-I = P / d
+I ∝ P / d²
 
-</div>
-
-<div class="formula">
-<b>Distance spreading:</b>
-I(d) = I₀ × (d₀/d)²
 </div>
 
 
@@ -2004,47 +1998,52 @@ function drawScene(){
 
     );
 
+// ======================================================
+// REFLECTED BEAM (line)
+// ======================================================
 
-    // ======================================================
-    // REFLECTED BEAM
-    // ======================================================
+ctx.strokeStyle = color;
+ctx.lineWidth = 3;
+ctx.globalAlpha = 0.65;
+ctx.shadowBlur = 10;
+ctx.shadowColor = color;
 
-    ctx.strokeStyle =
-        color;
+ctx.beginPath();
+ctx.moveTo(targetX+15, centerY);
+ctx.lineTo(detectorX, centerY);
+ctx.stroke();
+
+ctx.shadowBlur = 0;
+ctx.globalAlpha = 1;
 
 
-    ctx.lineWidth = 3;
+// ======================================================
+// REFLECTED BEAM MOVING PARTICLES
+// ======================================================
 
-    ctx.globalAlpha =
-        0.65;
+for(let i=0; i<10; i++){
 
+    const reflectedLength =
+        Math.max(40, detectorX - targetX - 15);
+
+    const px =
+        targetX + 15 +
+        (particlePosition + i*45) % reflectedLength;
 
     ctx.beginPath();
 
+    ctx.fillStyle = color;
 
-    ctx.moveTo(
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = color;
 
-        targetX+15,
+    ctx.arc(px, centerY, 3, 0, Math.PI*2);
 
-        centerY
+    ctx.fill();
 
-    );
+    ctx.shadowBlur = 0;
 
-
-    ctx.lineTo(
-
-        detectorX,
-
-        centerY
-
-    );
-
-
-    ctx.stroke();
-
-
-    ctx.globalAlpha = 1;
-
+}
 
     // ======================================================
     // PHOTODETECTOR
